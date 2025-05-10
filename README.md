@@ -67,7 +67,7 @@ Clone the repository:
 bash
 Copy
 Edit
-git clone https://github.com/your-username/edutech.git
+git clone https://github.com/CS-BIT-Project/2228015-PRIYANSHU-KUMAR-SINGH/tree/main
 Set up a local server using XAMPP or similar.
 
 Import database.sql into your MySQL server via phpMyAdmin.
