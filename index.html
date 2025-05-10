@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Edutech</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        .profile-menu {
+            position: relative;
+            cursor: pointer;
+            margin-left: 20px;
+        }
+        
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #48A6A7;
+        }
+        
+        .profile-icon-letter {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(to right, #48A6A7, #9ACBD0);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            border: 2px solid #48A6A7;
+        }
+        
+        .side-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            margin-right: 20px;
+        }
+        
+        .side-icon-letter {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(to right, #48A6A7, #9ACBD0);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            border: 2px solid #48A6A7;
+            margin-right: 20px;
+        }
+        
+        .profile-dropdown {
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 200px;
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+        }
+        
+        .profile-dropdown a {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-bottom: 1px solid #f0f0f0;
+            text-align: left;
+        }
+        
+        .profile-dropdown a:hover {
+            background: #f5f5f5;
+            color: #48A6A7;
+        }
+        
+        .profile-dropdown a:last-child {
+            border-bottom: none;
+        }
+        
+        .profile-dropdown a i {
+            margin-right: 10px;
+        }
+    </style>
+    <script>
+        $(window).on('scroll', function(){
+            if($(window).scrollTop()){
+                $('nav').addClass('black');
+            } else {
+                $('nav').removeClass('black');
+            }
+        });
+
+        // Initialize EmailJS
+        (function(){
+            emailjs.init("wp_LS_74rC3d1Rm8r"); // Replace with your actual EmailJS User ID (e.g., user_abc123xyz456)
+        })();
+
+        // Check authentication state
+        function checkAuthState() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if(user) {
+                // User is logged in
+                $('.get-started').hide();
+                $('.profile-menu').show();
+                $('#side-menu-profile').show();
+                $('#side-menu-logout').show();
+                $('#side-menu-login').hide();
+                const displayName = user.displayName || user.email || 'User';
+                $('#side-menu-username').text(displayName);
+                
+                // Update profile image or letter
+                const firstLetter = displayName.charAt(0).toUpperCase();
+                if(user.photoURL) {
+                    $('.profile-menu .profile-icon').show();
+                    $('.profile-menu .profile-icon-letter').hide();
+                    $('.profile-menu .profile-icon').attr('src', user.photoURL);
+                    $('.user .side-icon').show();
+                    $('.user .side-icon-letter').hide();
+                    $('.user .side-icon').attr('src', user.photoURL);
+                } else {
+                    $('.profile-menu .profile-icon').hide();
+                    $('.profile-menu .profile-icon-letter').show().text(firstLetter);
+                    $('.user .side-icon').hide();
+                    $('.user .side-icon-letter').show().text(firstLetter);
+                }
+            } else {
+                // User is logged out
+                $('.get-started').show();
+                $('.profile-menu').hide();
+                $('#side-menu-profile').hide();
+                $('#side-menu-logout').hide();
+                $('#side-menu-login').show();
+                $('#side-menu-username').text('Guest');
+                $('.user .side-icon').show().attr('src', 'images/profile_icon.png');
+                $('.user .side-icon-letter').hide();
+            }
+        }
+
+        // Toggle profile dropdown
+        function toggleProfileMenu() {
+            $('.profile-dropdown').toggle();
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('user');
+            checkAuthState();
+            window.location.href = 'login.html';
+        }
+
+        // Toggle side menu
+        function sideMenu(close) {
+            if(close) {
+                $('#side-menu').css('right', '-300px');
+            } else {
+                $('#side-menu').css('right', '0');
+            }
+        }
+
+        // Update visit counter
+        function updateVisitCounter() {
+            let visitCount = parseInt(localStorage.getItem('visitCount')) || 0;
+            visitCount++;
+            localStorage.setItem('visitCount', visitCount);
+            $('#visit-count').text(visitCount);
+            $('#visitCounter').text(visitCount);
+        }
+
+        $(document).ready(function() {
+            checkAuthState();
+            updateVisitCounter();
+            
+            // Bind click events to both profile icon types
+            $('.profile-menu .profile-icon, .profile-menu .profile-icon-letter').on('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                toggleProfileMenu();
+            });
+
+            // Close dropdown when clicking outside
+            $(document).click(function(event) {
+                if(!$(event.target).closest('.profile-menu').length) {
+                    $('.profile-dropdown').hide();
+                }
+            });
+
+            // Restrict course access for unauthenticated users
+            $('.course .det a').on('click', function(event) {
+                const user = JSON.parse(localStorage.getItem('user'));
+                if(!user) {
+                    event.preventDefault();
+                    window.location.href = 'login.html';
+                }
+            });
+
+            // Handle contact form submission with EmailJS
+            $('#contact-form').on('submit', function(event) {
+                event.preventDefault();
+                
+                const formData = {
+                    first_name: $('input[name="first_name"]').val(),
+                    last_name: $('input[name="last_name"]').val(),
+                    email: $('input[name="email"]').val(),
+                    message: $('input[name="message"]').val(),
+                    additional: $('textarea[name="additional"]').val()
+                };
+
+                console.log('Sending email with data:', formData); // Debug log
+
+                emailjs.send('service_po3ncxy', 'template_7mh0ag3', formData)
+                    .then(function(response) {
+                        console.log('Email sent successfully:', response); // Debug log
+                        alert('Message sent successfully!');
+                        $('#contact-form')[0].reset();
+                    }, function(error) {
+                        console.error('EmailJS error:', error); // Debug log
+                        alert('Failed to send message: ' + (error.text || 'Please check your EmailJS configuration and try again.'));
+                    });
+            });
+        });
+    </script>
+</head>
+<body>
+<!-- Navigation Bar -->
+    <header id="header">
+        <nav>
+            <div class="logo"><img src="/images/edutech_logo.png" alt="logo"></div>
+            <ul>
+                <li><a class="active" href="">Home</a></li>
+                <li><a href="#subjects_section">Subjects</a></li>
+                <li><a href="#about_section">About</a></li>
+                <li><a href="#contactus_section">Contact</a></li>
+                <li><a href="#feedBACK">Feedback</a></li>
+            </ul>
+            <div class="srch">
+                <input type="text" class="search" placeholder="Search here...">
+                <img src="images/search.webp" alt="search" onclick="slide()">
+            </div>
+            <a class="get-started" href="login.html">Get Started</a>
+            <div class="profile-menu" style="display: none;">
+                <img src="images/profile_icon.png" alt="Profile" class="profile-icon">
+                <div class="profile-icon-letter" style="display: none;"></div>
+                <div class="profile-dropdown" style="display: none;">
+                    <a href="profile.html">My Profile</a>
+                    <a href="settings.html">Settings</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+            </div>
+            <img src="images/side_menu.png" class="menu" onclick="sideMenu(0)" alt="menu">
+        </nav>
+        <div class="head-container">
+            <div class="quote">
+                <p>Education is the most powerful tool which you can use to make this world a better place</p>
+                <h5>Education empowers people with knowledge and skills to improve themselves and society. It promotes equality, reduces poverty, and inspires progress. With education, individuals can bring positive change, making the world a better and brighter place for all.</h5>
+                <div class="play">
+                    <img src="images/play.png" alt="play"><span><a href="https://www.youtube.com/watch?v=aXZPJ8yGbwU" target="_blank">Watch Now</a></span>
+                </div>
+            </div>
+            <div class="svg-image">
+                <img src="images/education _Learn Without Limits – Education for Everyone, Always Free!_.jpg" alt="svg">
+            </div>
+        </div>
+        <div class="side-menu" id="side-menu">
+            <div class="close" onclick="sideMenu(1)"><img src="images/side_menu.png" alt=""></div>
+            <div class="user">
+                <img src="images/profile_icon.png" alt="Profile" class="side-icon">
+                <div class="side-icon-letter" style="display: none;"></div>
+                <p id="side-menu-username">Guest</p>
+            </div>
+            <ul>
+                <li><a href="#about_section">About</a></li>
+                <li><a href="#subjects_section">Subjects</a></li>
+                <li><a href="#contactus_section">Contact</a></li>
+                <li><a href="#feedBACK">Feedback</a></li>
+                <li><a href="profile.html" id="side-menu-profile" style="display: none;">My Profile</a></li>
+                <li><a href="#" onclick="logout()" id="side-menu-logout" style="display: none;">Logout</a></li>
+                <li><a href="login.html" id="side-menu-login">Login</a></li>
+            </ul>
+        </div>
+    </header>
+
+<!-- Some Popular Subjects -->
+    <div class="title" id="subjects_section">
+        <span>Popular Subjects on Edutech</span>
+    </div>
+    <br><br>
+    <div class="course">
+        <div class="cbox">
+            <div class="det"><a href="courses.html"><img src="images/COMPUTER.png">Computer Courses</a></div>
+            <div class="det"><a href="/courses.html"><img src="images/DATA_STRUCTURE.png">Data Structures</a></div>
+            <div class="det"><a href="/courses.html"><img src="images/algo.png">Algorithm</a></div>
+            <div class="det det-last"><a href="/quiz.html"><img src="images/project_image.jpeg">Daily Quiz</a></div>
+        </div>
+    </div>
+
+<!-- ABOUT -->
+<div class="diffSection" id="about_section">
+    <center><p style="font-size: 50px; padding: 100px">About</p></center>
+    <div class="about-content">
+            <div class="side-image">
+                <img class="sideImage" src="/images/about_image.jpg">
+            </div>
+            <div class="side-text">
+                <h2>What you think about us ?</h2>
+                <p>Education is the process of facilitating learning, or the acquisition of knowledge, skills, values, beliefs, and habits. Educational methods include teaching, training, storytelling, discussion and directed research.<br> Educational website can include websites that have games, videos or topic related resources that act as tools to enhance learning and supplement classroom teaching. These websites help make the process of learning entertaining and attractive to the student, especially in today's age. <br>Using HTML(HyperText Markup Language), CSS(Cascading Style Sheet), JavaScript, we can make learning more easier and in a interesting way.</p>
+            </div>
+    </div>
+</div>
+
+    <BR></BR>
+
+<!-- COUNTER -->
+    <div class="counter-container">
+        <h1>Website Visit Counter</h1>
+        <div class="counter-box">
+            <p>Total visits to this page:</p>
+            <div class="counter-number" id="visit-count">0</div>
+            <div class="counter" id="visitCounter">0</div>
+        </div>
+    </div>
+
+    <BR></BR>
+
+<!-- SERVICES -->
+    <div class="service-swipe">
+        <div class="diffSection" id="services_section">
+            <center><p style="font-size: 50px; padding: 100px; padding-bottom: 40px; color: #fff;">Services</p></center>
+        </div>
+        <a href="/courses.html"><div class="s-card"><img src="images/online_cc.png"><p>Free Online Computer Courses</p></div></a>
+        <a href="/courses.html"><div class="s-card"><img src="images/building_cc.png"><p>Building Concepts for Competitive Exams</p></div></a>
+        <a href="https://youtu.be/E_-33cJ1VH0?si=JFKR4of_UG--uBz-"><div class="s-card"><img src="images/online_vl.png"><p>Online Video Lectures</p></div></a>
+        <a href="/quiz.html"><div class="s-card"><img src="images/SAMPLEPAPERS.png"><p>Sample Papers of Various Competitive Exams</p></div></a>
+        <a href="#"><div class="s-card"><img src="images/performance.png"><p>Performance and Ranking Report</p></div></a>
+        <a href="#contactus_section"><div class="s-card"><img src="images/DISCUSS.jpeg"><p>Discussion with Our Tutors & Mentors</p></div></a>
+        <a href="/quiz.html"><div class="s-card"><img src="images/daily_brain.png"><p>Daily Brain Teasing Questions to Improve IQ</p></div></a>
+        <a href="#contactus_section"><div class="s-card"><img src="images/CUSTOMER_SUPPORT.jpeg"><p>24x7 Online Support</p></div></a>
+    </div>
+
+<!-- CONTACT US -->
+    <div class="diffSection" id="contactus_section">
+        <p style="font-size: 50px; padding: 100px; text-align: center;">Contact Us</p>
+        <div class="csec"></div>
+        <div class="back-contact">
+            <div class="cc">
+                <form id="contact-form">
+                    <label>First Name <span class="imp">*</span></label><label style="margin-left: 185px">Last Name <span class="imp">*</span></label><br>
+                    <input type="text" name="first_name" style="margin-right: 10px; width: 175px" required="required"><input type="text" name="last_name" style="width: 175px" required="required"><br>
+                    <label>Email <span class="imp">*</span></label><br>
+                    <input type="email" name="email" style="width: 100%" required="required"><br>
+                    <label>Message <span class="imp">*</span></label><br>
+                    <input type="text" name="message" style="width: 100%" required="required"><br>
+                    <label>Additional Details</label><br>
+                    <textarea name="additional"></textarea><br>
+                    <button type="submit" id="csubmit">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<!-- FEEDBACK -->
+    <div class="title2" id="feedBACK">
+        <span>Give Feedback</span>
+        <div class="shortdesc2">
+            <p>Please share your valuable feedback to us</p>
+        </div>
+    </div>
+
+    <div class="feedbox">
+        <div class="feed">
+            <form action="mailto:priyanshusinghdsvv@gmail.com" method="post" enctype="text/plain">
+                <label>Your Name</label><br>
+                <input type="text" name="" class="fname" required="required"><br>
+                <label>Email</label><br>
+                <input type="email" name="mail" required="required"><br>
+                <label>Additional Details</label><br>
+                <textarea name="addtional"></textarea><br>
+                <button type="submit" id="csubmit">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+<!-- Sliding Information -->
+    <marquee style="background: linear-gradient(to right, #006A71, #006A71); margin-top: 50px;" direction="left" onmouseover="this.stop()" onmouseout="this.start()" scrollamount="20">
+        <div class="marqu">"Education is the passport to the future, for tomorrow belongs to those who prepare for it today." "Your attitude, not your aptitude, will determine your altitude." "If you think education is expensive, try ignorance." "The only person who is educated is the one who has learned how to learn …and change."</div>
+    </marquee>
+
+<!-- FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div class="left-col">
+                <img src="images/edutech_logo.png" style="width: 200px;">
+                <div class="logo"></div>
+                <div class="social-media">
+                    <a href="#"><img src="images/facebook-new.png"></a>
+                    <a href="#"><img src="images/insta 2..webp"></a>
+                    <a href="#"><img src="images/tweeter.png"></a>
+                    <a href="#"><img src="images/youtube.png"></a>
+                    <a href="#"><img src="images/linkedin.png"></a>
+                </div><br><br>
+                <div class="location">
+                    <p class="rights-text">Copyright © 2021 Created By Priyanshu Kumar Singh All Rights Reserved.</p>
+                    <br><p><img src="images/location.png"> Dev Sanskriti Vishwavidyalaya<br>Haridwar, Uttrakhand-249411</p><br>
+                    <p><img src="images/call.png"> +91-1234-567-890<br><img src="images/mail.png"> priyanshusinghdsvv@gmail.com</p>
+                </div>
+            </div>
+            <div class="right-col">
+                <h1 style="color: #fff">Our Newsletter</h1>
+                <div class="border"></div><br>
+                <p>Enter Your Email to get our News and updates.</p>
+                <form class="newsletter-form">
+                    <input class="txtb" type="email" placeholder="Enter Your Email">
+                    <input class="btn" type="submit" value="Submit">
+                </form>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login SignUp</title>
+    <link rel="stylesheet" type="text/css" href="/css/loginstyle.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <meta name="google-signin-client_id" content="300713621374-ranp2sp4lbdl1cd5p2tugv4pt2jj3lf7.apps.googleusercontent.com">
+</head>
+<body>
+    <div class="form-box">
+        <div class="button-box">
+            <div id="btn"></div>
+            <button type="button" class="toggle-btn" onclick="login()">Log In</button>
+            <button type="button" class="toggle-btn" onclick="register()">Register</button>
+        </div>
+
+        <form id="loginForm" class="input-group">
+            <input type="email" id="loginEmail" class="input-field" placeholder="Email" required>
+            <input type="password" id="loginPassword" class="input-field" placeholder="Password" required>
+            <a href="#" class="forgot-password" onclick="showForgotPassword()">Forgot Password?</a>
+            <button type="submit" class="submit-btn">Log In</button>
+            <div class="social-login">
+                <p>Or login with</p>
+                <button type="button" class="google-btn" id="googleSignInBtn">
+                    <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google logo"> -->
+                    <span>Google</span>
+                </button>
+            </div>
+        </form>
+
+        <form id="registerForm" class="input-group" style="left: 380px;">
+            <input type="text" id="registerName" class="input-field" placeholder="Full Name" required>
+            <input type="email" id="registerEmail" class="input-field" placeholder="Email" required>
+            <input type="password" id="registerPassword" class="input-field" placeholder="Password" required>
+            <input type="checkbox" class="check-box" id="termsCheckbox" required>I agree to the Terms & Conditions
+            <button type="submit" class="submit-btn">Register</button>
+            <div class="social-login">
+                <p>Or register with</p>
+                <button type="button" class="google-btn" id="googleSignUpBtn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google logo">
+                    <span>Google</span>
+                </button>
+            </div>
+        </form>
+
+        <form id="forgotPasswordForm" class="input-group" style="left: 450px; display: none;">
+            <h3 style="text-align: center; margin-bottom: 20px;">Reset Password</h3>
+            <input type="email" id="forgotPasswordEmail" class="input-field" placeholder="Enter your email" required>
+            <button type="submit" class="submit-btn">Send Reset Link</button>
+            <a href="#" class="back-to-login" onclick="hideForgotPassword()">Back to Login</a>
+        </form>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword,
+            sendPasswordResetEmail,
+            GoogleAuthProvider,
+            signInWithPopup,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCzwgtkJMKiwmznCuo6uuGm62o9PPxYzLs",
+            authDomain: "edutech-ffede.firebaseapp.com",
+            projectId: "edutech-ffede",
+            storageBucket: "edutech-ffede.appspot.com",
+            messagingSenderId: "300713621374",
+            appId: "1:300713621374:web:c2b0ab18634d0d4730e52f",
+            measurementId: "G-T0DC0L3LMH"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // Store user data in localStorage and redirect
+        const handleAuthSuccess = (userCredential, isGoogle = false) => {
+            const user = isGoogle ? {
+                email: userCredential.user.email,
+                displayName: userCredential.user.displayName,
+                uid: userCredential.user.uid,
+                photoURL: userCredential.user.photoURL
+            } : {
+                email: userCredential.user.email,
+                displayName: userCredential.user.displayName || userCredential.user.email.split('@')[0],
+                uid: userCredential.user.uid
+            };
+            
+            localStorage.setItem('user', JSON.stringify(user));
+            alert("Login successful!");
+            window.location.href = "index.html";
+        };
+
+        // Check auth state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("User is signed in:", user);
+            } else {
+                console.log("User is signed out");
+            }
+        });
+
+        // Registration with email/password
+        document.getElementById("registerForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            if(!document.getElementById("termsCheckbox").checked) {
+                alert("Please agree to the Terms & Conditions");
+                return;
+            }
+            
+            const email = document.getElementById("registerEmail").value;
+            const password = document.getElementById("registerPassword").value;
+            const name = document.getElementById("registerName").value;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    alert("Registration successful!");
+                    document.getElementById("registerForm").reset();
+                    login(); // switch to login form
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.error("Registration error:", errorCode, errorMessage);
+                    alert(`Registration error: ${errorMessage}`);
+                });
+        });
+
+        // Login with email/password
+        document.getElementById("loginForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const email = document.getElementById("loginEmail").value;
+            const password = document.getElementById("loginPassword").value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    handleAuthSuccess(userCredential);
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.error("Login error:", errorCode, errorMessage);
+                    alert(`Login failed: ${errorMessage}`);
+                });
+        });
+
+        // Forgot Password
+        document.getElementById("forgotPasswordForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const email = document.getElementById("forgotPasswordEmail").value;
+
+            sendPasswordResetEmail(auth, email)
+                .then(() => {
+                    alert("Password reset email sent! Please check your inbox.");
+                    hideForgotPassword();
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.error("Password reset error:", errorCode, errorMessage);
+                    alert(`Error sending reset email: ${errorMessage}`);
+                });
+        });
+
+        // Google Sign In Function
+        const handleGoogleSignIn = () => {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    handleAuthSuccess(result, true);
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    const email = error.customData.email;
+                    const credential = GoogleAuthProvider.credentialFromError(error);
+                    
+                    console.error("Google login error:", errorCode, errorMessage, email, credential);
+                    alert(`Google login failed: ${errorMessage}\n\nPlease ensure:\n1. You're on an authorized domain\n2. Google sign-in is enabled in Firebase console\n3. Your domain is added to authorized domains`);
+                });
+        };
+
+        // Attach Google Sign In to both buttons
+        document.getElementById("googleSignInBtn").addEventListener("click", handleGoogleSignIn);
+        document.getElementById("googleSignUpBtn").addEventListener("click", handleGoogleSignIn);
+
+        // Form switching functions
+        window.login = () => {
+            document.getElementById("loginForm").style.left = "50px";
+            document.getElementById("registerForm").style.left = "450px";
+            document.getElementById("forgotPasswordForm").style.display = "none";
+            document.getElementById("btn").style.left = "0px";
+        };
+
+        window.register = () => {
+            document.getElementById("loginForm").style.left = "-400px";
+            document.getElementById("registerForm").style.left = "50px";
+            document.getElementById("forgotPasswordForm").style.display = "none";
+            document.getElementById("btn").style.left = "110px";
+        };
+
+        window.showForgotPassword = () => {
+            document.getElementById("loginForm").style.left = "-400px";
+            document.getElementById("forgotPasswordForm").style.left = "50px";
+            document.getElementById("forgotPasswordForm").style.display = "block";
+            document.getElementById("btn").style.left = "0px";
+        };
+
+        window.hideForgotPassword = () => {
+            document.getElementById("loginForm").style.left = "50px";
+            document.getElementById("forgotPasswordForm").style.display = "none";
+            document.getElementById("btn").style.left = "0px";
+        };
+    </script>
+</body>
+</html>
