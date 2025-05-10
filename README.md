@@ -30,9 +30,6 @@ Conclusion: The project is highly feasible and readily achievable using commonly
 🧰 Tech Stack
 Layer	Tools & Technologies
 Frontend	HTML, CSS, JavaScript (React optional)
-Backend	PHP
-Database	MySQL
-Hosting	XAMPP / LAMP / Web Host
 
 🛠️ Features
 🔐 User Authentication (Login/Register using PHP sessions or Firebase alternative)
@@ -68,13 +65,6 @@ bash
 Copy
 Edit
 git clone https://github.com/CS-BIT-Project/2228015-PRIYANSHU-KUMAR-SINGH/tree/main
-Set up a local server using XAMPP or similar.
-
-Import database.sql into your MySQL server via phpMyAdmin.
-
-Configure database credentials in php/config.php.
-
-Open index.html in the browser via http://localhost/edutech.
 
 📈 Future Enhancements
 🔎 Search bar and filtering for content
