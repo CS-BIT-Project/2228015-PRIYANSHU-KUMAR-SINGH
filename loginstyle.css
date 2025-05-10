@@ -1,0 +1,232 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background-image: linear-gradient(rgba(0,0,0,0.1),rgba(0,0,0,0.3)), url("/images/mountain_singup.webp");
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.form-box {
+    width: 380px;
+    height: auto;
+    min-height: 500px;
+    position: relative;
+    margin: 20px auto;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.button-box {
+    width: 220px;
+    margin: 25px auto;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 30px;
+    background: #f1f1f1;
+}
+
+.toggle-btn {
+    padding: 10px 30px;
+    cursor: pointer;
+    background: transparent;
+    position: relative;
+    border: 0;
+    outline: none;
+    font-weight: 600;
+    color: #555;
+    z-index: 1;
+    transition: all 0.3s;
+}
+
+#btn {
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 110px;
+    height: 100%;
+    background: linear-gradient(to right, #071848, #DF2771);
+    border-radius: 30px;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.input-group {
+    top: 150px;
+    position: absolute;
+    width: 280px;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    font-size: 14px;
+    left: 50px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 12px 5px;
+    margin: 10px 0;
+    border: none;
+    border-bottom: 1px solid #999;
+    outline: none;
+    background: transparent;
+    color: #333;
+    font-size: 15px;
+    transition: all 0.3s;
+}
+
+.input-field:focus {
+    border-bottom: 2px solid #DF2771;
+    transform: translateY(-2px);
+}
+
+::placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+.submit-btn {
+    width: 85%;
+    padding: 12px;
+    cursor: pointer;
+    display: block;
+    margin: 25px auto;
+    background: linear-gradient(to right, #FA4B37, #071848);
+    color: #fff;
+    border: 0;
+    outline: none;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(250, 75, 55, 0.3);
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(250, 75, 55, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(1px);
+}
+
+.check-box {
+    cursor: pointer;
+    margin: 20px 5px 20px 0;
+    accent-color: #DF2771;
+    width: 15px;
+    height: 15px;
+}
+
+.forgot-password {
+    display: block;
+    text-align: center;
+    margin: 15px 0;
+    color: #555;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.forgot-password:hover {
+    color: #DF2771;
+    text-decoration: underline;
+}
+
+.back-to-login {
+    display: block;
+    text-align: center;
+    margin: 15px 0 0;
+    color: #555;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.back-to-login:hover {
+    color: #DF2771;
+    text-decoration: underline;
+}
+
+.social-login {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.social-login p {
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #555;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    padding: 10px 20px;
+    cursor: pointer;
+    width: 85%;
+    margin: 0 auto;
+    transition: all 0.3s;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.google-btn:hover {
+    background: #f9f9f9;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-color: #ccc;
+    transform: translateY(-2px);
+}
+
+.google-btn:active {
+    transform: translateY(0);
+}
+
+.google-btn img {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .form-box {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .input-group {
+        width: 90%;
+        left: 5%;
+    }
+    
+    .button-box {
+        width: 200px;
+    }
+    
+    .google-btn, .submit-btn {
+        width: 100%;
+    }
+}
